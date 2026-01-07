@@ -60,5 +60,8 @@ env/
 venv/
 *.egg-info/
 
+# Test files
+test_jrnl.py
+
 # macOS
 .DS_Store

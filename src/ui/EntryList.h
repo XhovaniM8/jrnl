@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QListWidget>
 #include <QLineEdit>
+#include <QPushButton>
 #include <QList>
 #include "core/Entry.h"
 #include "core/SearchEngine.h"
