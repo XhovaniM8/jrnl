@@ -186,6 +186,7 @@ void MainWindow::saveCurrentEntry()
     if (m_vault->storage()->saveEntry(entry)) {
         m_currentEntry = entry;
         m_entryList->updateEntry(entry);
+        m_entryEditor->markSaved();
         statusBar()->showMessage("Entry saved", 2000);
     } else {
         statusBar()->showMessage("Failed to save entry", 3000);

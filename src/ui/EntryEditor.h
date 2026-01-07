@@ -17,6 +17,7 @@ public:
     void setEntry(const Entry& entry);
     Entry getEntry() const;
     void clear();
+    void markSaved() { m_hasUnsavedChanges = false; }
     
     bool hasUnsavedChanges() const { return m_hasUnsavedChanges; }
 

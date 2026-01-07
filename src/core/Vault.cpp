@@ -1,6 +1,7 @@
 #include "Vault.h"
 #include <QDir>
 #include <QFile>
+#include <QTextStream>
 #include <QDebug>
 
 Vault::Vault()
@@ -33,11 +34,13 @@ bool Vault::createVault(const QString& path)
     // Create a .jrnl marker file
     QString markerPath = path + "/.jrnl";
     QFile marker(markerPath);
-    if (marker.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream out(&marker);
-        out << "jrnl vault v1.0\n";
-        marker.close();
+    if (!marker.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Failed to create vault marker file:" << markerPath;
+        return false;
     }
+    QTextStream out(&marker);
+    out << "jrnl vault v1.0\n";
+    marker.close();
     
     qDebug() << "Created vault at:" << path;
     return true;

@@ -89,6 +89,6 @@ void EntryEditor::onAutoSave()
 {
     if (m_hasUnsavedChanges) {
         emit saveRequested();
-        m_hasUnsavedChanges = false;
+        // Note: m_hasUnsavedChanges will be reset by the caller after successful save
     }
 }

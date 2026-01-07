@@ -95,8 +95,8 @@ Entry Storage::loadEntry(const QString& id)
         // Get content after front matter
         entryContent = content.mid(match.capturedEnd());
         
-        // Remove the title header if present
-        QRegularExpression titleRegex("^#\\s+.*?\\n\\n");
+        // Remove the title header if present (handles single or double newlines)
+        QRegularExpression titleRegex("^#\\s+.*?\\n+");
         entryContent = entryContent.remove(titleRegex);
     } else {
         entryContent = content;
