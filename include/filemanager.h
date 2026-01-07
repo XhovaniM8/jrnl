@@ -24,7 +24,7 @@ public:
     bool ensureDirectoryExists();
     
     // Entry operations
-    bool saveEntry(const JournalEntry& entry);
+    bool saveEntry(JournalEntry& entry);  // Non-const to allow updating file path
     JournalEntry loadEntry(const QString& filePath);
     QList<JournalEntry> loadAllEntries();
     bool deleteEntry(const QString& filePath);

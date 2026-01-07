@@ -145,7 +145,7 @@ void MainWindow::newEntry()
         return;
     }
     
-    // Create new entry
+    // Create new entry (default constructor creates empty file path)
     m_currentEntry = JournalEntry();
     m_editor->clear();
     m_editor->setModified(false);
@@ -279,7 +279,9 @@ bool MainWindow::maybeSave()
     
     if (ret == QMessageBox::Save) {
         saveEntry();
-        return true;
+        // Check if save was successful by checking if entry still has modifications
+        // or if the file path is now set (indicating successful save)
+        return !m_editor->isModified() || !m_currentEntry.filePath().isEmpty();
     } else if (ret == QMessageBox::Cancel) {
         return false;
     }

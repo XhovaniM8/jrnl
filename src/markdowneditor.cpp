@@ -76,7 +76,7 @@ void MarkdownHighlighter::setupHighlightRules()
     rule.format = headerFormat;
     m_rules.append(rule);
     
-    // Bold
+    // Bold - must come before italic to prevent conflicts
     QTextCharFormat boldFormat;
     boldFormat.setFontWeight(QFont::Bold);
     rule.pattern = QRegularExpression("\\*\\*[^\\*]+\\*\\*");
@@ -86,13 +86,13 @@ void MarkdownHighlighter::setupHighlightRules()
     rule.format = boldFormat;
     m_rules.append(rule);
     
-    // Italic
+    // Italic - use negative lookahead/lookbehind to avoid matching bold
     QTextCharFormat italicFormat;
     italicFormat.setFontItalic(true);
-    rule.pattern = QRegularExpression("\\*[^\\*]+\\*");
+    rule.pattern = QRegularExpression("(?<!\\*)\\*(?!\\*)[^\\*]+\\*(?!\\*)");
     rule.format = italicFormat;
     m_rules.append(rule);
-    rule.pattern = QRegularExpression("_[^_]+_");
+    rule.pattern = QRegularExpression("(?<!_)_(?!_)[^_]+_(?!_)");
     rule.format = italicFormat;
     m_rules.append(rule);
     

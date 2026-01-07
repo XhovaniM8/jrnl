@@ -4,6 +4,7 @@
 #include <QPlainTextEdit>
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
+#include <QRegularExpression>
 
 /**
  * @brief Custom text editor optimized for Markdown editing

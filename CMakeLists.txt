@@ -11,7 +11,9 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui)
 
 # Optional: Find Python for integration
-find_package(Python3 COMPONENTS Interpreter Development)
+if(PYTHON_ENABLED)
+    find_package(Python3 COMPONENTS Interpreter Development)
+endif()
 
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -44,7 +46,7 @@ target_link_libraries(jrnl
 )
 
 # Optional: Link Python if found
-if(Python3_FOUND)
+if(PYTHON_ENABLED AND Python3_FOUND)
     target_include_directories(jrnl PRIVATE ${Python3_INCLUDE_DIRS})
     target_link_libraries(jrnl ${Python3_LIBRARIES})
     target_compile_definitions(jrnl PRIVATE PYTHON_ENABLED)

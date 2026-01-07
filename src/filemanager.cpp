@@ -31,7 +31,7 @@ bool FileManager::ensureDirectoryExists()
     return true;
 }
 
-bool FileManager::saveEntry(const JournalEntry& entry)
+bool FileManager::saveEntry(JournalEntry& entry)
 {
     QString filePath = entry.filePath();
     
@@ -41,7 +41,14 @@ bool FileManager::saveEntry(const JournalEntry& entry)
         filePath = m_journalDir.absoluteFilePath(fileName);
     }
     
-    return writeMarkdownFile(filePath, entry);
+    bool success = writeMarkdownFile(filePath, entry);
+    
+    // Update entry's file path after successful save
+    if (success) {
+        entry.setFilePath(filePath);
+    }
+    
+    return success;
 }
 
 JournalEntry FileManager::loadEntry(const QString& filePath)
@@ -97,9 +104,29 @@ QStringList FileManager::listEntryFiles()
 
 QString FileManager::sanitizeFileName(const QString& name)
 {
+    // Use simple string replace for better performance
     QString sanitized = name.toLower();
-    sanitized.replace(QRegularExpression("[^a-z0-9]+"), "-");
-    sanitized.replace(QRegularExpression("^-+|-+$"), "");
+    
+    // Replace non-alphanumeric characters with hyphens
+    for (int i = 0; i < sanitized.length(); ++i) {
+        QChar c = sanitized[i];
+        if (!c.isLetterOrNumber()) {
+            sanitized[i] = '-';
+        }
+    }
+    
+    // Remove leading/trailing hyphens and collapse multiple hyphens
+    sanitized = sanitized.trimmed();
+    while (sanitized.contains("--")) {
+        sanitized.replace("--", "-");
+    }
+    if (sanitized.startsWith('-')) {
+        sanitized = sanitized.mid(1);
+    }
+    if (sanitized.endsWith('-')) {
+        sanitized.chop(1);
+    }
+    
     return sanitized;
 }
 
@@ -168,8 +195,10 @@ JournalEntry FileManager::parseMarkdownFile(const QString& filePath)
                 }
             }
             
-            // Remove H1 title if it matches the frontmatter title
-            if (mainContent.startsWith("# " + entry.title())) {
+            // Remove H1 title if it matches the frontmatter title exactly
+            if (!entry.title().isEmpty() && 
+                mainContent.startsWith("# " + entry.title() + "\n")) {
+                // Find the end of the title line
                 int newlinePos = mainContent.indexOf('\n');
                 if (newlinePos != -1) {
                     mainContent = mainContent.mid(newlinePos + 1).trimmed();
@@ -192,7 +221,12 @@ JournalEntry FileManager::parseMarkdownFile(const QString& filePath)
         
         // Use file metadata for dates
         QFileInfo fileInfo(filePath);
-        entry.setCreatedAt(fileInfo.birthTime());
+        // birthTime() may not work on all filesystems, use lastModified() as fallback
+        QDateTime created = fileInfo.birthTime();
+        if (!created.isValid()) {
+            created = fileInfo.lastModified();
+        }
+        entry.setCreatedAt(created);
         entry.setModifiedAt(fileInfo.lastModified());
     }
     
